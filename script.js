@@ -2,9 +2,9 @@ window.onload = function()
 {
 
   var jdim = 1080;
-  var idim = 720;
+  var idim = 920;
 
-  var echelle = 2.5;
+  var echelle = 1.5;
 
   document.getElementById('canvas').width = jdim;
   document.getElementById('canvas').height = idim;
@@ -12,7 +12,7 @@ window.onload = function()
   var nbmir = document.getElementById("input_nbmir").value;
   var F = document.getElementById("input_F").value;
   var l = document.getElementById("input_l").value;
-  var d = document.getElementById("input_d").value;
+  var d = document.getElementById("input_d").value + 1;
   var theta = document.getElementById("input_theta").value;
 
   var sun = 800;
@@ -29,7 +29,7 @@ window.onload = function()
   }
   document.getElementById("input_theta").oninput = function(){
     theta = document.getElementById("input_theta").value;
-    document.getElementById("val_theta").innerHTML = theta + " &deg;";
+    document.getElementById("val_theta").innerHTML = (theta * 180 / Math.PI).toFixed(2) + " &deg;";
     context.clearRect(0, 0, canvas.width, canvas.height);
     Affichage(nbmir, F, l, d, theta, sun, e, echelle);
   }
@@ -113,10 +113,14 @@ window.onload = function()
     var yi;
     var xa;
 
+    var dray;
+    var xb;
+    var yb;
+
     var i = (nbmir - 1) /2;
     for (var pos = -i ; pos <= i ; pos++)
     {
-      L = pos * l + pos * d;
+      L = pos * l + pos * (d+1);
       alpha = 0.5 * Math.atan(L/F);
       y2 = Math.abs(l * Math.tan(alpha));
 
@@ -128,19 +132,32 @@ window.onload = function()
         context.lineTo((jdim/2) + L+(l/2), idim - 30 - y2 - e);
         context.lineTo((jdim/2) + L-(l/2), idim - 30 - e);
         context.lineTo((jdim/2) + L-(l/2), idim - 30);
-        context.stroke();
+
+        theta = parseFloat(theta);
+
+        xi = L;
+        yi = e + (y2/2);
+        xa = L + Math.tan(theta) * (sun - yi);
+
+        /* DESSIN DU RAYON REFLECHI */
+        dray = Math.sqrt(Math.pow(sun - yi, 2) + Math.pow(L - xa, 2));
+        var angle = theta + 2 * alpha;
+        xb = L - dray * Math.sin(angle);
+        yb = yi + dray * Math.cos(theta + 2 * alpha);
+
+
+        context1.moveTo((jdim/2) + xi, idim - 30 - yi);
+        context1.lineTo((jdim/2) + xb, idim - 30 - yb);
+
+
 
         /* DESSIN DU RAYON INCIDENT */
         if ((document.getElementById("input_ray")).checked == true)
         {
-          xi = L;
-          yi = e + (y2/2);
-          xa = L + Math.tan(theta) * (sun - yi);
-
           context1.moveTo((jdim/2) + xa, idim - 30 - sun);
           context1.lineTo((jdim/2) + xi, idim - 30 - yi);
-          context1.stroke();
         }
+        else {}
 
       }
       else {
@@ -149,24 +166,39 @@ window.onload = function()
         context.lineTo((jdim/2) + L+(l/2), idim - 30 - e);
         context.lineTo((jdim/2) + L-(l/2), idim - 30 - y2 - e);
         context.lineTo((jdim/2) + L-(l/2), idim - 30);
-        context.stroke();
+
+        theta = parseFloat(theta);
+
+        xi = L;
+        yi = e + (y2/2);
+        xa = L + Math.tan(theta) * (sun - yi);
+
+        /* DESSIN DU RAYON REFLECHI */
+        dray = Math.sqrt(Math.pow(sun - yi, 2) + Math.pow(L - xa, 2));
+        xb = L - dray * Math.sin(theta + 2 * alpha);
+        yb = yi + dray * Math.cos(theta + 2 * alpha);
+
+        context1.moveTo((jdim/2) + xi, idim - 30 - yi);
+        context1.lineTo((jdim/2) + xb, idim - 30 - yb);
+
 
         /* DESSIN DU RAYON INCIDENT */
         if ((document.getElementById("input_ray")).checked == true)
         {
-          xi = L;
-          yi = e + (y2/2);
-          xa = L + Math.tan(theta) * (sun - yi);
-
           context1.moveTo((jdim/2) + xa, idim - 30 - sun);
           context1.lineTo((jdim/2) + xi, idim - 30 - yi);
-          context1.stroke();
         }
+        else {}
+
 
       }
 
     }
+    context.stroke();
     context.closePath();
+
+    context1.stroke();
+    context1.closePath();
   }
 
 }
