@@ -139,6 +139,7 @@ window.onload = function()
 
           context1.moveTo((jdim/2) + xa, idim - 30 - sun);
           context1.lineTo((jdim/2) + xi, idim - 30 - yi);
+          context1.stroke();
         }
 
       }
@@ -148,7 +149,7 @@ window.onload = function()
         context.lineTo((jdim/2) + L+(l/2), idim - 30 - e);
         context.lineTo((jdim/2) + L-(l/2), idim - 30 - y2 - e);
         context.lineTo((jdim/2) + L-(l/2), idim - 30);
-        context.stroke();//On trace seulement les lignes.
+        context.stroke();
 
         /* DESSIN DU RAYON INCIDENT */
         if ((document.getElementById("input_ray")).checked == true)
@@ -159,6 +160,7 @@ window.onload = function()
 
           context1.moveTo((jdim/2) + xa, idim - 30 - sun);
           context1.lineTo((jdim/2) + xi, idim - 30 - yi);
+          context1.stroke();
         }
 
       }
