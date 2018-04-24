@@ -26,6 +26,9 @@ window.onload = function()
     document.getElementById("val_nbmir").innerHTML = nbmir;
     context.clearRect(0, 0, canvas.width, canvas.height);
     Affichage(nbmir, F, l, d, theta, sun, e, echelle);
+    Etalement(nbmir, F, l, d, theta, sun, e)
+    if (document.getElementById("input_arc").checked == true) {
+      courbe_concentration(nbmir, F, l, d, sun, e, echelle);}
   }
   document.getElementById("input_theta").oninput = function(){
     theta = document.getElementById("input_theta").value;
@@ -33,24 +36,36 @@ window.onload = function()
     context.clearRect(0, 0, canvas.width, canvas.height);
     theta = parseFloat(theta)* Math.PI / 180;
     Affichage(nbmir, F, l, d, theta, sun, e, echelle);
+    Etalement(nbmir, F, l, d, theta, sun, e)
+    if (document.getElementById("input_arc").checked == true) {
+      courbe_concentration(nbmir, F, l, d, sun, e, echelle);}
   }
   document.getElementById("input_F").oninput = function(){
     F = document.getElementById("input_F").value;
     document.getElementById("val_F").innerHTML = F/100 + " m";
     context.clearRect(0, 0, canvas.width, canvas.height);
     Affichage(nbmir, F, l, d, theta, sun, e, echelle);
+    Etalement(nbmir, F, l, d, theta, sun, e)
+    if (document.getElementById("input_arc").checked == true) {
+      courbe_concentration(nbmir, F, l, d, sun, e, echelle);}
   }
   document.getElementById("input_l").oninput = function(){
     l = document.getElementById("input_l").value;
     document.getElementById("val_l").innerHTML = l + " cm";
     context.clearRect(0, 0, canvas.width, canvas.height);
     Affichage(nbmir, F, l, d, theta, sun, e, echelle);
+    Etalement(nbmir, F, l, d, theta, sun, e)
+    if (document.getElementById("input_arc").checked == true) {
+      courbe_concentration(nbmir, F, l, d, sun, e, echelle);}
   }
   document.getElementById("input_d").oninput = function(){
     d = document.getElementById("input_d").value;
     document.getElementById("val_d").innerHTML = d + " cm";
     context.clearRect(0, 0, canvas.width, canvas.height);
     Affichage(nbmir, F, l, d, theta, sun, e, echelle);
+    Etalement(nbmir, F, l, d, theta, sun, e)
+    if (document.getElementById("input_arc").checked == true) {
+      courbe_concentration(nbmir, F, l, d, sun, e, echelle);}
   }
 
 
@@ -59,6 +74,14 @@ window.onload = function()
     context.clearRect(0, 0, canvas.width, canvas.height);
     Affichage(nbmir, F, l, d, theta, sun, e, echelle);
   }
+  document.getElementById("input_arc").onchange = function(){
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    Affichage(nbmir, F, l, d, theta, sun, e, echelle);
+    if (document.getElementById("input_arc").checked == true) {
+      courbe_concentration(nbmir, F, l, d, sun, e, echelle);}
+  }
+
+
 
 
 
@@ -77,6 +100,9 @@ window.onload = function()
 
   var context = canvas.getContext('2d');
   var context1 = canvas.getContext('2d');
+  var context2 = canvas.getContext('2d');
+  var context3 = canvas.getContext('2d');
+
   if(!context)
   {
     alert("Impossible de récupérer le context du canvas");
@@ -86,6 +112,7 @@ window.onload = function()
 
   //DESSIN
   Affichage(nbmir, F, l, d, theta, sun, e, echelle);
+  Etalement(nbmir, F, l, d, theta, sun, e)
 
 
 
@@ -200,10 +227,7 @@ window.onload = function()
     context1.closePath();
 
 
-
-    Etalement(nbmir, F, l, d, theta, sun, e)
   }
-
 
 
 
@@ -290,5 +314,212 @@ window.onload = function()
     var etal = Math.sqrt(Math.pow(X1-X2, 2) + Math.pow(Y1-Y2, 2));
 
     document.getElementById("val_etal").innerHTML = (etal).toFixed(2) + " cm";
+  }
+
+
+
+
+
+
+  function courbe_concentration(nbmir, F, l, d, sun, e, echelle) {
+    context3.beginPath();
+    for (var itheta1 = 0 ; itheta1 <= 75 ; itheta1++)
+    {
+
+      var theta1= itheta1* Math.PI / 180;
+
+
+      var pos = 1;
+
+      var L = pos * l + pos * d;
+      var alpha = 0.5*Math.atan(L/F);
+      var y2 = Math.abs(l * Math.tan(alpha));
+
+      var Xa = L;
+      var Ya = e + y2/2;
+
+      var xa = L + Math.tan(theta1) * (sun - Ya);
+
+      var dray = Math.sqrt(Math.pow(sun-Ya, 2) + Math.pow(L-xa, 2));
+      var Xb = L - dray*Math.sin(theta1+ 2*alpha);
+      var Yb = Ya + dray * Math.cos(theta1+ 2*alpha);
+
+
+
+
+      pos = -1;
+
+      L = pos * l + pos * d;
+      alpha = 0.5*Math.atan(L/F);
+      y2 = Math.abs(l * Math.tan(alpha));
+
+      var Xc = L;
+      var Yc = e + y2/2;
+
+      xa = L + Math.tan(theta1) * (sun - Ya);
+
+      dray = Math.sqrt(Math.pow(sun-Yc, 2) + Math.pow(L-xa, 2));
+      var Xd = L - dray*Math.sin(theta1+ 2*alpha);
+      var Yd = Yc + dray * Math.cos(theta1+ 2*alpha);
+
+
+      X1 = (((Yb-Ya)/(Xb-Xa))*Xa+Ya-((Yd-Yc)/(Xd-Xc))*Xc-Yc) / (((Yb-Ya)/(Xb-Xa))-((Yd-Yc)/(Xd-Xc)));
+      Y1 = ((Yb-Ya)/(Xb-Xa))*((((Yb-Ya)/(Xb-Xa))*Xa+Ya-((Yd-Yc)/(Xd-Xc))*Xc-Yc) / (((Yb-Ya)/(Xb-Xa))-((Yd-Yc)/(Xd-Xc)))-Xa)+Ya;
+
+
+
+
+      pos = (nbmir-1) / 2;
+
+      L = pos * l + pos * d;
+      alpha = 0.5*Math.atan(L/F);
+      y2 = Math.abs(l * Math.tan(alpha));
+
+      Xa = L;
+      Ya = e + y2/2;
+
+      xa = L + Math.tan(theta1) * (sun - Ya);
+
+      dray = Math.sqrt(Math.pow(sun-Ya, 2) + Math.pow(L-xa, 2));
+      Xb = L - dray*Math.sin(theta1+ 2*alpha);
+      Yb = Ya + dray * Math.cos(theta1+ 2*alpha);
+
+
+
+      pos = -(nbmir-1) / 2;
+
+      L = pos * l + pos * d;
+      alpha = 0.5*Math.atan(L/F);
+      y2 = Math.abs(l * Math.tan(alpha));
+
+      Xc = L;
+      Yc = e + y2/2;
+
+      xa = L + Math.tan(theta1) * (sun - Yc);
+
+      dray = Math.sqrt(Math.pow(sun-Yc, 2) + Math.pow(L-xa, 2));
+      Xd = L - dray*Math.sin(theta1+ 2*alpha);
+      Yd = Yc + dray * Math.cos(theta1+ 2*alpha);
+
+
+      X2 = (((Yb-Ya)/(Xb-Xa))*Xa+Ya-((Yd-Yc)/(Xd-Xc))*Xc-Yc) / (((Yb-Ya)/(Xb-Xa))-((Yd-Yc)/(Xd-Xc)));
+      Y2 = ((Yb-Ya)/(Xb-Xa))*((((Yb-Ya)/(Xb-Xa))*Xa+Ya-((Yd-Yc)/(Xd-Xc))*Xc-Yc) / (((Yb-Ya)/(Xb-Xa))-((Yd-Yc)/(Xd-Xc)))-Xa)+Ya;
+
+
+      var x;
+      var y;
+
+      if (theta1> 0) {
+        x = (jdim/2) + echelle * (0.67 * X1 + 0.33 * X2);
+        y = idim - 30 - echelle * (0.67 * Y1 + 0.33 * Y2);
+        context3.lineTo(x, y);
+      }
+      else {
+        x = (jdim/2) + echelle * (0.67 * X1 + 0.33 * X2);
+        y = idim - 30 - echelle * (0.67 * Y1 + 0.33 * Y2);
+        context3.moveTo(x, y);
+      }
+    }
+
+    for (var itheta1 = 0 ; itheta1 <= 75 ; itheta1++)
+    {
+
+      var theta1= itheta1* Math.PI / 180;
+
+
+      var pos = 1;
+
+      var L = pos * l + pos * d;
+      var alpha = 0.5*Math.atan(L/F);
+      var y2 = Math.abs(l * Math.tan(alpha));
+
+      var Xa = L;
+      var Ya = e + y2/2;
+
+      var xa = L + Math.tan(theta1) * (sun - Ya);
+
+      var dray = Math.sqrt(Math.pow(sun-Ya, 2) + Math.pow(L-xa, 2));
+      var Xb = L - dray*Math.sin(theta1+ 2*alpha);
+      var Yb = Ya + dray * Math.cos(theta1+ 2*alpha);
+
+
+
+
+      pos = -1;
+
+      L = pos * l + pos * d;
+      alpha = 0.5*Math.atan(L/F);
+      y2 = Math.abs(l * Math.tan(alpha));
+
+      var Xc = L;
+      var Yc = e + y2/2;
+
+      xa = L + Math.tan(theta1) * (sun - Ya);
+
+      dray = Math.sqrt(Math.pow(sun-Yc, 2) + Math.pow(L-xa, 2));
+      var Xd = L - dray*Math.sin(theta1+ 2*alpha);
+      var Yd = Yc + dray * Math.cos(theta1+ 2*alpha);
+
+
+      X1 = (((Yb-Ya)/(Xb-Xa))*Xa+Ya-((Yd-Yc)/(Xd-Xc))*Xc-Yc) / (((Yb-Ya)/(Xb-Xa))-((Yd-Yc)/(Xd-Xc)));
+      Y1 = ((Yb-Ya)/(Xb-Xa))*((((Yb-Ya)/(Xb-Xa))*Xa+Ya-((Yd-Yc)/(Xd-Xc))*Xc-Yc) / (((Yb-Ya)/(Xb-Xa))-((Yd-Yc)/(Xd-Xc)))-Xa)+Ya;
+
+
+
+
+      pos = (nbmir-1) / 2;
+
+      L = pos * l + pos * d;
+      alpha = 0.5*Math.atan(L/F);
+      y2 = Math.abs(l * Math.tan(alpha));
+
+      Xa = L;
+      Ya = e + y2/2;
+
+      xa = L + Math.tan(theta1) * (sun - Ya);
+
+      dray = Math.sqrt(Math.pow(sun-Ya, 2) + Math.pow(L-xa, 2));
+      Xb = L - dray*Math.sin(theta1+ 2*alpha);
+      Yb = Ya + dray * Math.cos(theta1+ 2*alpha);
+
+
+
+      pos = -(nbmir-1) / 2;
+
+      L = pos * l + pos * d;
+      alpha = 0.5*Math.atan(L/F);
+      y2 = Math.abs(l * Math.tan(alpha));
+
+      Xc = L;
+      Yc = e + y2/2;
+
+      xa = L + Math.tan(theta1) * (sun - Yc);
+
+      dray = Math.sqrt(Math.pow(sun-Yc, 2) + Math.pow(L-xa, 2));
+      Xd = L - dray*Math.sin(theta1+ 2*alpha);
+      Yd = Yc + dray * Math.cos(theta1+ 2*alpha);
+
+
+      X2 = (((Yb-Ya)/(Xb-Xa))*Xa+Ya-((Yd-Yc)/(Xd-Xc))*Xc-Yc) / (((Yb-Ya)/(Xb-Xa))-((Yd-Yc)/(Xd-Xc)));
+      Y2 = ((Yb-Ya)/(Xb-Xa))*((((Yb-Ya)/(Xb-Xa))*Xa+Ya-((Yd-Yc)/(Xd-Xc))*Xc-Yc) / (((Yb-Ya)/(Xb-Xa))-((Yd-Yc)/(Xd-Xc)))-Xa)+Ya;
+
+
+      var x;
+      var y;
+
+      if (theta1> 0) {
+        x = (jdim/2) - echelle * (0.67 * X1 + 0.33 * X2);
+        y = idim - 30 - echelle * (0.67 * Y1 + 0.33 * Y2);
+        context3.lineTo(x, y);
+      }
+      else {
+        x = (jdim/2) - echelle * (0.67 * X1 + 0.33 * X2);
+        y = idim - 30 - echelle * (0.67 * Y1 + 0.33 * Y2);
+        context3.moveTo(x, y);
+      }
+    }
+
+    context3.stroke();
+    context3.closePath();
   }
 }

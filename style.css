@@ -33,7 +33,7 @@
   flex-direction: row;
   justify-content: space-evenly;
 }
-#val_etal {
+#val_etal, #val_dist {
   color: red;
   font-weight: bold;
   /*********************/
