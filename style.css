@@ -1,0 +1,61 @@
+.container {
+  display: flex;
+}
+
+
+
+
+
+#canvas, #anim {
+  border: solid 1px;
+}
+#anim {
+  width: 1280px;
+  height: 720px;
+  margin: 0;
+  padding: 0;
+  /********************/
+  flex-direction: row;
+}
+#param, .param {
+  width: 200px;;
+  margin-bottom: 15px;
+  /*********************/
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+#etal {
+  width: 70%;
+  /*********************/
+  margin-top: 40px;
+  /*********************/
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+#val_etal {
+  color: red;
+  font-weight: bold;
+  /*********************/
+  background-color: pink;
+  border-radius: 5px;
+  /*********************/
+  padding: 5px 30%;
+  margin-top: 2px;
+}
+.opt {
+  width: 70%;
+  /*********************/
+  flex-direction: row;
+  justify-content: space-evenly;
+  /*********************/
+  margin: 5px 0;
+}
+
+p {
+  margin: 0;
+  padding: 0;
+}
+input[type="range"] {
+  margin: 2px 0 -5px 0;
+}
