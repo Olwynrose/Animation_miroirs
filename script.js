@@ -13,7 +13,7 @@ window.onload = function()
   var F = document.getElementById("input_F").value;
   var l = document.getElementById("input_l").value;
   var d = document.getElementById("input_d").value + 1;
-  var theta = document.getElementById("input_theta").value;
+  var theta = parseFloat(document.getElementById("input_theta").value)* Math.PI / 180;
 
   var sun = 800;
   var e = 1;
@@ -29,8 +29,9 @@ window.onload = function()
   }
   document.getElementById("input_theta").oninput = function(){
     theta = document.getElementById("input_theta").value;
-    document.getElementById("val_theta").innerHTML = (theta * 180 / Math.PI).toFixed(2) + " &deg;";
+    document.getElementById("val_theta").innerHTML = theta + " &deg;";
     context.clearRect(0, 0, canvas.width, canvas.height);
+    theta = parseFloat(theta)* Math.PI / 180;
     Affichage(nbmir, F, l, d, theta, sun, e, echelle);
   }
   document.getElementById("input_F").oninput = function(){
@@ -54,18 +55,13 @@ window.onload = function()
 
 
 
-  document.getElementById("input_etal").onchange = function(){
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    Affichage(nbmir, F, l, d, theta, sun, e, echelle);
-  }
-  document.getElementById("input_arc").onchange = function(){
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    Affichage(nbmir, F, l, d, theta, sun, e, echelle);
-  }
   document.getElementById("input_ray").onchange = function(){
     context.clearRect(0, 0, canvas.width, canvas.height);
     Affichage(nbmir, F, l, d, theta, sun, e, echelle);
   }
+
+
+
 
   //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
   //                             CANVAS
@@ -93,6 +89,12 @@ window.onload = function()
 
 
 
+
+
+
+
+
+
   function Affichage(nbmir, F, l, d, theta, sun, e, echelle) {
 
     var L;
@@ -106,7 +108,7 @@ window.onload = function()
     e = e * echelle;
 
 
-    context.beginPath();//On démarre un nouveau tracé
+    context.beginPath();
     context1.beginPath();
 
     var xi;
@@ -133,8 +135,6 @@ window.onload = function()
         context.lineTo((jdim/2) + L-(l/2), idim - 30 - e);
         context.lineTo((jdim/2) + L-(l/2), idim - 30);
 
-        theta = parseFloat(theta);
-
         xi = L;
         yi = e + (y2/2);
         xa = L + Math.tan(theta) * (sun - yi);
@@ -145,7 +145,6 @@ window.onload = function()
         xb = L - dray * Math.sin(angle);
         yb = yi + dray * Math.cos(theta + 2 * alpha);
 
-
         context1.moveTo((jdim/2) + xi, idim - 30 - yi);
         context1.lineTo((jdim/2) + xb, idim - 30 - yb);
 
@@ -154,8 +153,8 @@ window.onload = function()
         /* DESSIN DU RAYON INCIDENT */
         if ((document.getElementById("input_ray")).checked == true)
         {
-          context1.moveTo((jdim/2) + xa, idim - 30 - sun);
-          context1.lineTo((jdim/2) + xi, idim - 30 - yi);
+          context.moveTo((jdim/2) + xa, idim - 30 - sun);
+          context.lineTo((jdim/2) + xi, idim - 30 - yi);
         }
         else {}
 
@@ -185,8 +184,8 @@ window.onload = function()
         /* DESSIN DU RAYON INCIDENT */
         if ((document.getElementById("input_ray")).checked == true)
         {
-          context1.moveTo((jdim/2) + xa, idim - 30 - sun);
-          context1.lineTo((jdim/2) + xi, idim - 30 - yi);
+          context.moveTo((jdim/2) + xa, idim - 30 - sun);
+          context.lineTo((jdim/2) + xi, idim - 30 - yi);
         }
         else {}
 
@@ -199,6 +198,97 @@ window.onload = function()
 
     context1.stroke();
     context1.closePath();
+
+
+
+    Etalement(nbmir, F, l, d, theta, sun, e)
   }
 
+
+
+
+
+  function Etalement(nbmir, F, l, d, theta, sun, e) {
+
+    var pos = 1;
+
+    var L = pos * l + pos * d;
+    var alpha = 0.5*Math.atan(L/F);
+    var y2 = Math.abs(l * Math.tan(alpha));
+
+    var Xa = L;
+    var Ya = e + y2/2;
+
+    var xa = L + Math.tan(theta) * (sun - Ya);
+
+    var dray = Math.sqrt(Math.pow(sun-Ya, 2) + Math.pow(L-xa, 2));
+    var Xb = L - dray*Math.sin(theta + 2*alpha);
+    var Yb = Ya + dray * Math.cos(theta + 2*alpha);
+
+
+
+
+    pos = -1;
+
+    L = pos * l + pos * d;
+    alpha = 0.5*Math.atan(L/F);
+    y2 = Math.abs(l * Math.tan(alpha));
+
+    var Xc = L;
+    var Yc = e + y2/2;
+
+    xa = L + Math.tan(theta) * (sun - Ya);
+
+    dray = Math.sqrt(Math.pow(sun-Yc, 2) + Math.pow(L-xa, 2));
+    var Xd = L - dray*Math.sin(theta + 2*alpha);
+    var Yd = Yc + dray * Math.cos(theta + 2*alpha);
+
+
+    X1 = (((Yb-Ya)/(Xb-Xa))*Xa+Ya-((Yd-Yc)/(Xd-Xc))*Xc-Yc) / (((Yb-Ya)/(Xb-Xa))-((Yd-Yc)/(Xd-Xc)));
+    Y1 = ((Yb-Ya)/(Xb-Xa))*((((Yb-Ya)/(Xb-Xa))*Xa+Ya-((Yd-Yc)/(Xd-Xc))*Xc-Yc) / (((Yb-Ya)/(Xb-Xa))-((Yd-Yc)/(Xd-Xc)))-Xa)+Ya;
+
+
+
+
+    pos = (nbmir-1) / 2;
+
+    L = pos * l + pos * d;
+    alpha = 0.5*Math.atan(L/F);
+    y2 = Math.abs(l * Math.tan(alpha));
+
+    Xa = L;
+    Ya = e + y2/2;
+
+    xa = L + Math.tan(theta) * (sun - Ya);
+
+    dray = Math.sqrt(Math.pow(sun-Ya, 2) + Math.pow(L-xa, 2));
+    Xb = L - dray*Math.sin(theta + 2*alpha);
+    Yb = Ya + dray * Math.cos(theta + 2*alpha);
+
+
+
+    pos = -(nbmir-1) / 2;
+
+    L = pos * l + pos * d;
+    alpha = 0.5*Math.atan(L/F);
+    y2 = Math.abs(l * Math.tan(alpha));
+
+    Xc = L;
+    Yc = e + y2/2;
+
+    xa = L + Math.tan(theta) * (sun - Yc);
+
+    dray = Math.sqrt(Math.pow(sun-Yc, 2) + Math.pow(L-xa, 2));
+    Xd = L - dray*Math.sin(theta + 2*alpha);
+    Yd = Yc + dray * Math.cos(theta + 2*alpha);
+
+
+    X2 = (((Yb-Ya)/(Xb-Xa))*Xa+Ya-((Yd-Yc)/(Xd-Xc))*Xc-Yc) / (((Yb-Ya)/(Xb-Xa))-((Yd-Yc)/(Xd-Xc)));
+    Y2 = ((Yb-Ya)/(Xb-Xa))*((((Yb-Ya)/(Xb-Xa))*Xa+Ya-((Yd-Yc)/(Xd-Xc))*Xc-Yc) / (((Yb-Ya)/(Xb-Xa))-((Yd-Yc)/(Xd-Xc)))-Xa)+Ya;
+
+
+    var etal = Math.sqrt(Math.pow(X1-X2, 2) + Math.pow(Y1-Y2, 2));
+
+    document.getElementById("val_etal").innerHTML = (etal).toFixed(2) + " cm";
+  }
 }
