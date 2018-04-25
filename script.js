@@ -163,12 +163,18 @@ window.onload = function()
     var xb;
     var yb;
 
+    var a;
+    var b;
+
     var i = (nbmir - 1) /2;
     for (var pos = -i ; pos <= i ; pos++)
     {
       L = pos * l + pos * (d+1);
 
-      alpha = 0.5 * Math.atan(L/F) + (Math.random()-0.5) * Math.sqrt(12) * err;
+      a = Math.random();
+      b = Math.random();
+
+      alpha = 0.5 * Math.atan(L/F) + err * Math.sqrt(-2 * Math.log(a)) * Math.cos(2 * Math.PI * b);
 
       y2 = Math.abs(l * Math.tan(alpha));
 
@@ -361,8 +367,7 @@ window.onload = function()
       document.getElementById("val_dist").innerHTML = dist.toFixed(1) + " cm";
     }
 
-
-    var etal = Math.sqrt(Math.pow(X1-X2, 2) + Math.pow(Y1-Y2, 2)) + 2 * dist2 * Math.tan(err);
+    var etal = Math.sqrt(Math.pow(X1-X2, 2) + Math.pow(Y1-Y2, 2)) + Math.sqrt(12) * dist2 * Math.tan(err);
 
     if (etal >= 100) {
       document.getElementById("val_etal").innerHTML = (etal/100).toFixed(2) + " m";
