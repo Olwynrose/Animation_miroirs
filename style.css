@@ -11,14 +11,14 @@
 }
 #anim {
   width: 1280px;
-  height: 720px;
+  height: 920px;
   margin: 0;
   padding: 0;
   /********************/
   flex-direction: row;
 }
 #param, .param {
-  width: 200px;;
+  width: 200px;
   margin-bottom: 15px;
   /*********************/
   flex-direction: column;
@@ -33,7 +33,7 @@
   flex-direction: row;
   justify-content: space-evenly;
 }
-#val_etal, #val_dist {
+#val_etal, #val_dist, #val_dist2 {
   color: red;
   font-weight: bold;
   /*********************/
